@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using PraksaVjezba.Entities;
@@ -11,9 +12,10 @@ using PraksaVjezba.Entities;
 namespace PraksaVjezba.Migrations
 {
     [DbContext(typeof(PraksaDbContext))]
-    partial class PraksaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20220714124408_AddCountryMigrations")]
+    partial class AddCountryMigrations
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -40,38 +42,6 @@ namespace PraksaVjezba.Migrations
                         .HasName("pk_country");
 
                     b.ToTable("country", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Srbija"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Hrvatska"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Grcka"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Bosna i Hercegovina"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Italija"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "Francuska"
-                        });
                 });
 
             modelBuilder.Entity("PraksaVjezba.Entities.TodoItem", b =>

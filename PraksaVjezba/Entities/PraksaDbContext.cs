@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-
+using PraksaVjezba.Seeders;
 
 namespace PraksaVjezba.Entities
 {
@@ -18,6 +18,9 @@ namespace PraksaVjezba.Entities
         }
 
 
-
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            DataSeed.SeedCountryData(modelBuilder);
+        }
     }
 }
