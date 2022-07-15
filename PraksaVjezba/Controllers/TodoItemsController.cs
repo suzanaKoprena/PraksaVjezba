@@ -2,8 +2,8 @@
 using Microsoft.AspNetCore.Mvc;
 using PraksaVjezba.Models.Response;
 using PraksaVjezba.Models.Request;
-using PraksaVjezba.Models;
 using AutoMapper;
+using PraksaVjezba.Entities;
 
 namespace PraksaVjezba.Controllers
 {
@@ -13,23 +13,26 @@ namespace PraksaVjezba.Controllers
     {
         public static List<TodoItem> db;
         public readonly IMapper mapper;
-        public TodoItemsController(IMapper mapper)
+        private readonly PraksaDbContext context;
+
+        public TodoItemsController(IMapper mapper,PraksaDbContext context)
         {
             this.mapper=mapper;
-            if (db == null)
+            this.context = context;
+            /*if (db == null)
             {
                 db = new List<TodoItem>();
                 db.Add(new TodoItem { Id = 1, Title = "Item1", Description = "Desc1", Status = 0, CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now });
                 db.Add(new TodoItem { Id = 2, Title = "Item2", Description = "Desc2", Status = 0, CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now });
                 db.Add(new TodoItem { Id = 3, Title = "Item3", Description = "Desc3", Status = 0, CreatedDate = DateTime.Now, UpdatedDate = DateTime.Now });
-            }
+            }*/
         }
 
 
         [HttpGet]
         public List<TodoItemResponse> GetToDoItems()
         {
-            return db.Select(a=>new TodoItemResponse { Title=a.Title, Description=a.Description}).ToList();
+            return context.TodoItems.Select(a=>new TodoItemResponse { Title=a.Title, Description=a.Description}).ToList();
         }
 
         /*[HttpGet("{id}")]
@@ -43,7 +46,7 @@ namespace PraksaVjezba.Controllers
         [HttpGet("{id}")]
         public ActionResult<TodoItemResponse> GetToDoItem(int id)
         {
-            var item = db.FirstOrDefault(x => x.Id == id);
+            var item = context.TodoItems.FirstOrDefault(x => x.Id == id);
             if (item != null)
                 //return Ok(new TodoItemResponse { Title = item.Title, Description = item.Description });
                 return Ok(mapper.Map<TodoItemResponse>(item));
@@ -55,31 +58,31 @@ namespace PraksaVjezba.Controllers
         public TodoItemResponse InsertTodoItem(TodoItemRequest input)
         {
             var item = mapper.Map<TodoItem>(input);
-            db.Add(item);
+            context.TodoItems.Add(item);
+            context.SaveChanges();
             return new TodoItemResponse { Title = item.Title, Description = item.Description };
         }
 
         [HttpPut("{id}")]
         public TodoItemResponse UpdateTodoItem(int id,TodoItemRequest input)
         {
-            var tmp=db.FirstOrDefault(x => x.Id == id);
-            int index=db.IndexOf(tmp);
-            if (index != -1)
+            var tmp=context.TodoItems.FirstOrDefault(x => x.Id == id);
+            if (tmp != null)
             {
-                db[index].Title = input.Title;
-                db[index].Description = input.Description;
-                db[index].Status = input.Status;
-                return mapper.Map<TodoItemResponse>(db[index]);
+                tmp.Title = input.Title;
+                tmp.Description = input.Description;
+                tmp.Status = input.Status;
+                context.SaveChanges();
+                return mapper.Map<TodoItemResponse>(tmp);
             }
-
             return null;
-           
         }
 
         [HttpDelete("{id}")]
-        public bool DeleteTodoItem(int id)
+        public void DeleteTodoItem(int id)
         {
-            return db.Remove(db.FirstOrDefault(x => x.Id == id));
+            context.TodoItems.Remove(db.FirstOrDefault(x => x.Id == id));
+            context.SaveChanges();
         }
 
     }
